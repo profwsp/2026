@@ -1,35 +1,52 @@
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useState, useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as MediaLibrary from 'expo-media-library'; // Importante para salvar
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function App() {
+function CameraInterface() {
   const [ladoCamera, setLadoCamera] = useState('back');
-  const [permissao, solicitarPermissao] = useCameraPermissions();
+  const [permissaoCamera, solicitarPermissaoCamera] = useCameraPermissions();
+  const [permissaoMedia, solicitarPermissaoMedia] = MediaLibrary.usePermissions();
   const cameraRef = useRef(null);
+  const insets = useSafeAreaInsets();
 
-  if (!permissao) return <View style={styles.container} />;
+  // 1. Verificação de permissões (Câmera e Galeria)
+  if (!permissaoCamera || !permissaoMedia) return <View style={styles.container} />;
 
-  if (!permissao.granted) {
+  if (!permissaoCamera.granted || permissaoMedia.status !== 'granted') {
     return (
       <View style={styles.container}>
-        <Text style={styles.mensagem}>Precisamos da sua permissão para acessar a câmera</Text>
-        <TouchableOpacity style={styles.botaoPermissao} onPress={solicitarPermissao}>
-          <Text style={{ color: '#fff', fontWeight: 'bold' }}>CONCEDER ACESSO</Text>
+        <Text style={styles.mensagem}>Precisamos de acesso à câmera e galeria.</Text>
+        <TouchableOpacity 
+          style={styles.botaoPermissao} 
+          onPress={() => {
+            solicitarPermissaoCamera();
+            solicitarPermissaoMedia();
+          }}
+        >
+          <Text style={{ color: '#fff', fontWeight: 'bold' }}>CONCEDER PERMISSÕES</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
-  function alternarLadoCamera() {
-    setLadoCamera(atual => (atual === 'back' ? 'front' : 'back'));
-  }
-
+  // 2. Função para tirar a foto e salvar
   async function tirarFoto() {
     if (cameraRef.current) {
-      const foto = await cameraRef.current.takePictureAsync();
-      console.log('Foto capturada:', foto.uri);
-      // Aqui você pode salvar na galeria ou navegar para uma tela de preview
+      try {
+        // Tira a foto
+        const foto = await cameraRef.current.takePictureAsync();
+        
+        // Salva na galeria do celular
+        await MediaLibrary.saveToLibraryAsync(foto.uri);
+        
+        Alert.alert('Sucesso!', 'Foto salva na sua galeria!');
+      } catch (error) {
+        console.log("Erro ao tirar foto:", error);
+        Alert.alert('Erro', 'Não foi possível salvar a foto.');
+      }
     }
   }
 
@@ -40,39 +57,32 @@ export default function App() {
         facing={ladoCamera} 
         ref={cameraRef}
       >
-        {/* Header - Opções como Flash ou Fechar */}
-        <View style={styles.header}>
-          <TouchableOpacity>
-            <Ionicons name="flash-outline" size={28} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="settings-outline" size={28} color="white" />
+        <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+          <TouchableOpacity style={styles.iconButton}>
+            <Ionicons name="flash-outline" size={24} color="white" />
           </TouchableOpacity>
         </View>
 
-        {/* Footer - Controles Principais */}
-        <View style={styles.footer}>
+        <View style={[styles.footer, { paddingBottom: insets.bottom + 20 }]}>
           <View style={styles.controlesPrincipais}>
             
-            {/* Miniatura da Galeria (Placeholder) */}
-            <TouchableOpacity style={styles.botaoSecundario}>
+            <View style={styles.botaoSecundario}>
+              {/* Placeholder para última foto */}
               <View style={styles.miniaturaGaleria} />
-            </TouchableOpacity>
+            </View>
 
-            {/* Botão de Disparo (Shutter) */}
             <TouchableOpacity 
               style={styles.botaoDisparoExterno} 
-              onPress={tirarFoto}
+              onPress={tirarFoto} // Chama a função de salvar
             >
               <View style={styles.botaoDisparoInterno} />
             </TouchableOpacity>
 
-            {/* Alternar Câmera */}
             <TouchableOpacity 
               style={styles.botaoSecundario} 
-              onPress={alternarLadoCamera}
+              onPress={() => setLadoCamera(a => a === 'back' ? 'front' : 'back')}
             >
-              <Ionicons name="camera-reverse-outline" size={32} color="white" />
+              <Ionicons name="camera-reverse-outline" size={28} color="white" />
             </TouchableOpacity>
 
           </View>
@@ -82,73 +92,28 @@ export default function App() {
   );
 }
 
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <CameraInterface />
+    </SafeAreaProvider>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000',
-    justifyContent: 'center',
-  },
-  camera: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  mensagem: {
-    textAlign: 'center',
-    color: 'white',
-    marginBottom: 20,
-    paddingHorizontal: 30
-  },
-  botaoPermissao: {
-    backgroundColor: '#4A90E2',
-    padding: 15,
-    borderRadius: 8,
-    alignSelf: 'center'
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    paddingTop: 40,
-  },
-  footer: {
-    paddingBottom: 40,
-  },
-  controlesPrincipais: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-    width: '100%',
-  },
+  container: { flex: 1, backgroundColor: '#000', justifyContent: 'center' },
+  camera: { flex: 1, justifyContent: 'space-between' },
+  mensagem: { color: 'white', textAlign: 'center', marginBottom: 20 },
+  botaoPermissao: { backgroundColor: '#007AFF', padding: 15, borderRadius: 10, alignSelf: 'center' },
+  header: { flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 20 },
+  footer: { width: '100%' },
+  controlesPrincipais: { flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' },
   botaoDisparoExterno: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    borderWidth: 4,
-    borderColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
+    width: 80, height: 80, borderRadius: 40, borderWidth: 5, borderColor: 'white',
+    justifyContent: 'center', alignItems: 'center',
   },
-  botaoDisparoInterno: {
-    width: 65,
-    height: 65,
-    borderRadius: 35,
-    backgroundColor: 'white',
-  },
-  botaoSecundario: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  miniaturaGaleria: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: '#333', // Simula a última foto tirada
-    borderWidth: 1,
-    borderColor: 'white'
-  }
+  botaoDisparoInterno: { width: 60, height: 60, borderRadius: 30, backgroundColor: 'white' },
+  botaoSecundario: { width: 50, height: 50, borderRadius: 25, backgroundColor: 'rgba(255,255,255,0.2)', justifyContent: 'center', alignItems: 'center' },
+  miniaturaGaleria: { width: 35, height: 35, borderRadius: 5, backgroundColor: '#444', borderWidth: 1, borderColor: 'white' },
+  iconButton: { padding: 10, backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: 25 }
 });
