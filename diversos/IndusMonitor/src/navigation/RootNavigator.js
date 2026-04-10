@@ -47,7 +47,8 @@ export const NavigationContainer = () => {
         }}
       />
 
-      {/* Scanner Tab */}
+      {/* Scanner Tab - Desabilitado temporariamente */}
+      {/* 
       <Tab.Screen
         name="Scanner"
         component={ScannerScreen}
@@ -62,6 +63,7 @@ export const NavigationContainer = () => {
           ),
         }}
       />
+      */}
 
       {/* Sensors Tab */}
       <Tab.Screen
