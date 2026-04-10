@@ -10,7 +10,7 @@ import { darkIndustrialTheme } from './src/theme/darkIndustrialTheme';
 export default function App() {
   return (
     <PaperProvider theme={darkIndustrialTheme}>
-      <RNNavigationContainer>
+      <RNNavigationContainer>a
         <SafeAreaProvider>
           <RootNavigator />
           <StatusBar barStyle="light-content" backgroundColor="#0A0E27" />
