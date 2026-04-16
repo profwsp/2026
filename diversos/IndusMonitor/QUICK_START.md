@@ -1,126 +1,162 @@
-# 🚀 Guia de Inicio Rápido - IndusMonitor 4.0
+# 🚀 Guia Rápido de Início - LabApp Didático
 
-## Pré-requisitos
+## ⚡ 5 Passos para Começar
 
-- **Node.js** versão 16+ (baixe em https://nodejs.org)
-- **Expo CLI** instalado globalmente
-- **Android Studio** ou **Xcode** (para rodar em emulador/dispositivo)
-
-## 📦 Instalação
-
-### 1. Instalar dependências
+### 1️⃣ Instalar Dependências
 ```bash
 cd IndusMonitor
 npm install
 ```
 
-Ou se preferir usar yarn:
-```bash
-yarn install
-```
+### 2️⃣ Configurar Firebase
 
-### 2. Instalar Expo CLI globalmente (se não tiver)
-```bash
-npm install -g expo-cli
-```
+**Opção A: Rápido (apenas teste)**
+- Abra `src/config/firebaseConfig.js`
+- Substitua com suas credenciais do Firebase
+ - Habilite no Console: Auth (Email/Senha), Firestore e Storage
 
-## ▶️ Executando a Aplicação
+**Opção B: Detalhado**
+- Leia [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) para instruções passo-a-passo
+- Crie um projeto em [firebase.google.com](https://firebase.google.com)
 
-### Iniciar servidor de desenvolvimento
+### 3️⃣ Iniciar o Servidor
 ```bash
 npm start
 ```
 
-Ou use o comando direto do Expo:
+Você verá um código QR no terminal.
+
+### 4️⃣ Abrir no Dispositivo
+
+**Android:**
+- Abra "Expo Go"
+- Escaneie o código QR
+
+**iPhone:**
+- Abra a câmera
+- Aponte para o código QR
+- Toque em "Abrir em Expo Go"
+
+**Web:**
+- Pressione `w` no terminal
+
+### 5️⃣ Testar
+
+1. Veja a **Splash Screen** aparecer (3 segundos)
+2. Vá para a **Tela de Login**
+3. **Crie uma nova conta** ou use uma existente
+4. Veja seu **nome no topo da Home Screen**
+5. Teste:
+   - `Bancadas` (RF03): reserve uma bancada por data/hora
+   - `Avarias` (RF04): envie descrição + foto
+   - (Opcional) mude seu `role` para `admin` no Firestore e teste `Equipamentos` (RF02)
+   - (Opcional) crie um usuário `professor` e teste `Histórico` (RF05)
+
+## ✅ Checklist de Setup
+
+- [ ] Node.js instalado (`node --version`)
+- [ ] NPM instalado (`npm --version`)
+- [ ] Projeto clonado/baixado
+- [ ] Google/Firebase account criada
+- [ ] Firebase project criado
+- [ ] Credenciais copiadas
+- [ ] `firebaseConfig.js` atualizado
+- [ ] `npm install` executado
+- [ ] `npm start` funcionando
+
+## 📱 O que Você Verá
+
+```
+TELA 1: Splash Screen (3s)
+├─ Fundo: Azul (#0066CC)
+└─ Texto: "IndusMonitor" (branco)
+   Versão: "v1.0.0" (abaixo)
+
+       ↓ (após 3 segundos)
+
+TELA 2: Login
+├─ Campo: Email
+├─ Campo: Senha
+├─ Botão: Entrar
+└─ Link: Criar Conta
+
+       ↓ (após autenticação)
+
+TELA 3: Home
+├─ Topo Esquerda: Seu Nome
+├─ Centro: "LabApp Didático"
+└─ Menu:
+   ├─ Agendar Bancada
+   ├─ Relatar Avaria
+   ├─ Equipamentos (admin)
+   └─ Histórico (professor)
+```
+
+## 🆘 Problemas Comuns
+
+### ❌ "Cannot find module 'firebase'"
 ```bash
-expo start
+npm install firebase
 ```
 
-### Executar em plataforma específica
+### ❌ "Firebase config is undefined"
+1. Abra `src/config/firebaseConfig.js`
+2. Verifique se os valores não são vazios
+3. Copie novamente as credenciais do Firebase
 
-#### Android
+### ❌ "PERMISSION_DENIED"
+1. Vá ao Firebase Console
+2. Regras → Altere para:
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    allow read, write: if true;
+  }
+}
+```
+> ⚠️ **Apenas para desenvolvimento!** Nunca use em produção.
+
+### ❌ "Cannot find module 'expo'"
 ```bash
-npm run android
+npm install expo expo-splash-screen expo-status-bar
 ```
 
-#### iOS (apenas em Mac)
+### ❌ Port já em uso
 ```bash
-npm run ios
+npm start -- --port 19001
 ```
 
-#### Web
+### ❌ App não recarrega
 ```bash
-npm run web
+npm start -- --clear
 ```
 
-## 🔧 Troubleshooting
+## 📚 Documentação Completa
 
-### Problema: "Cannot find module expo-barcode-scanner"
-**Solução**: Certifique-se de que rodou `npm install`
+- **Firebase Setup**: [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)
+- **README Completo**: [README.md](./README.md)
+- **Firebase Docs**: https://firebase.google.com/docs
+- **React Native Docs**: https://reactnative.dev
 
-### Problema: Port 19000 já em uso
-**Solução**: Use outro port: `expo start --port 19001`
+## 💡 Dicas Importantes
 
-### Problema: Permissões de câmera negadas (Android)
-**Solução**: Limpe o app e tente novamente, conceda permissões quando solicitado
+✅ Sempre use `npm start -- --clear` se tiver problemas  
+✅ Recarregue o app pressionando `r` no terminal  
+✅ Verifique a console do seu telefone com `j` (Android)  
+✅ Verifique logs pressionando `m` (menu)  
 
-### Problema: App não inicia no iOS
-**Solução**: Limpe cache com `expo start -c` (clear cache)
+## 🎯 Próximos Passos
 
-## 📁 Estrutura do Projeto
+Depois que funcionar:
+1. Customize as cores em `src/theme/darkIndustrialTheme.js`
+2. Adicione mais dados no Dashboard
+3. Configure notificações push
+4. Deploy para produção
 
-```
-IndusMonitor/
-├── App.js                      # Entrada principal
-├── app.json                    # Configuração Expo
-├── package.json                # Dependências
-├── src/
-│   ├── theme/                  # Temas visuais
-│   ├── components/             # Componentes reutilizáveis
-│   ├── screens/                # Telas da app
-│   ├── navigation/             # Configuração de navegação
-│   ├── config/                 # Configurações globais
-│   ├── constants/              # Constantes e enums
-│   └── data/                   # Dados de exemplo
-└── assets/                     # Imagens e ícones
-```
+---
 
-## 🎯 Funcionalidades Principais
-
-### Dashboard
-- Visualização de máquinas em tempo real
-- Status: Operando, Alerta, Parada
-- Temperatura e vibração de cada máquina
-
-### Scanner QR Code
-- Lê QR codes usando câmera
-- Identifica máquinas por código unique
-- Registra informações do códigoidentificado
-
-### Sensores
-- Monitoramento de vibração em tempo real
-- Acelerômetro nos eixos X, Y, Z
-- Gráfico dinâmico dos dados
-- Classificação automática de status
-
-## 📱 Testando em Simulador
-
-### Android Emulator
-1. Abra o Android Studio
-2. Crie um dispositivo virtual (AVD)
-3. Inicie o emulador
-4. Na CLI do Expo, pressione `a`
-
-### iOS Simulator (Mac)
-1. Tenha Xcode instalado
-2. Na CLI do Expo, pressione `i`
-
-## 🔌 Testando em Dispositivo Real
-
-### Android
-1. Baixe o app **Expo Go** no Google Play
-2. Escaneie o QR code exibido no terminal com o app
-3. O app carregará no dispositivo
+**Pronto?** Execute `npm start`! 🎉
 
 ### iOS
 1. Baixe o app **Expo Go** na App Store
