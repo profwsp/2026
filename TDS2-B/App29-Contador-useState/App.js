@@ -3,46 +3,38 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 export default function Contador() {
   const [contador, setContador] = useState(0);
+ 
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}>Contador de cliques</Text>
+    <View style={estilos.container}>
+      <Text style={estilos.titulo}>Contador</Text>
 
-      <Text style={styles.numero}>{contador}</Text>
+      <Text style={estilos.numero}>{contador}</Text>
 
-      <TouchableOpacity
-        style={styles.botao}
-        onPress={() => setContador(contador + 1)}
-      >
-        <Text style={styles.botaoTexto}>Aumentar</Text>
+      <TouchableOpacity>
+        <Text>Aumentar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={ styles.botaoSecundario}
-        onPress={() => setContador(contador - 1)}
-      >
-        <Text style={styles.botaoTexto}>Diminuir</Text>
+      <TouchableOpacity>
+        <Text>Diminuir</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.botaoReset}
-        onPress={() => setContador(0)}
-      >
-        <Text style={styles.botaoTexto}>Resetar</Text>
+      <TouchableOpacity>
+        <Text>Resetar</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const estilos = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#f0f0f0',
     justifyContent: 'center',
     alignItems: 'center',
   },
   titulo: {
-    color: '#fff',
+    color: '#000',
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 20,
@@ -53,7 +45,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 40,
   },
-  botao: {
+  botaoAumentar: {
     backgroundColor: '#1e90ff',
     paddingVertical: 12,
     paddingHorizontal: 30,
@@ -62,7 +54,7 @@ const styles = StyleSheet.create({
     width: 200,
     alignItems: 'center',
   },
-  botaoSecundario: {
+  botaoDiminuir: {
     backgroundColor: '#ff9800',
     paddingVertical: 12,
     paddingHorizontal: 30,
