@@ -6,7 +6,7 @@ export default function Contador() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Contador</Text>
+      <Text style={styles.titulo}>Contador de cliques</Text>
 
       <Text style={styles.numero}>{contador}</Text>
 

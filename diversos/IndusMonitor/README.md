@@ -1,12 +1,37 @@
-# IndusMonitor 4.0 - Estrutura & Documentação
+# LabApp Didático (React Native + Firebase)
 
-## 📋 Visão Geral
+Aplicativo didático (sem TypeScript) para alunos, construído a partir de **requisitos funcionais (RF)** e **não funcionais (RNF)** levantados em entrevistas. O foco é demonstrar, na prática, autenticação, CRUD, agendamento, upload de imagens e relatórios usando **React Native (Expo)** + **Firebase**.
 
-IndusMonitor 4.0 é uma aplicação React Native com Expo para monitoramento industrial em tempo real, desenvolvida para o SENAI. A aplicação oferece:
+## ✅ Requisitos atendidos
 
-- **Dashboard**: Visualização de máquinas com status em tempo real
-- **Scanner**: Leitura de QR Codes para identificação de máquinas
-- **Sensores**: Monitoramento de vibração via acelerômetro
+- **RF01 – Autenticação de Usuário**
+  - Login/registro via Firebase Auth (email/senha)
+  - Perfis: `aluno` e `professor` no cadastro; `admin` definido no Firestore
+- **RF02 – Cadastro de Equipamentos**
+  - Tela `Equipamentos` (CRUD) visível apenas para `admin`
+- **RF03 – Agendamento de Bancadas**
+  - Tela `Bancadas` com “mapa” em grid e reserva por data/hora
+  - Estratégia performática: 1 documento por `bancada + slot` (ID único)
+- **RF04 – Relatório de Avarias**
+  - Tela `Avarias` para enviar descrição + foto (Storage) e listar alertas
+- **RF05 – Histórico de Uso**
+  - Tela `Histórico` (professor) para consultar reservas por data e opcionalmente por bancada
+
+## RNF (como foi coberto)
+
+- **RNF01 – Usabilidade (responsivo)**: Expo + React Native Paper, funciona em Android/iOS e também no web (`npm run web`).
+- **RNF02 – Segurança**: senhas ficam no Firebase Authentication (hash/criptografia gerenciada pelo provedor).
+- **RNF03 – Desempenho**: consulta/conflito de reserva é O(1) por documento (`{benchId}_{slotKey}`), evitando varreduras.
+- **RNF04 – Disponibilidade**: depende do Firebase (serviço gerenciado); para produção configure regras/índices e monitoração.
+- **RNF05 – Tecnologia**: React Native (Expo) + Firebase.
+
+## 📋 Pré-requisitos
+
+- Node.js (v16 ou superior)
+- npm ou yarn
+- Expo CLI instalado
+- Uma conta Google para Firebase
+- Um smartphone com Expo Go instalado (para testar no celular)
 
 ## 📁 Estrutura do Projeto
 
@@ -15,101 +40,75 @@ IndusMonitor/
 ├── App.js                          # Ponto de entrada da aplicação
 ├── app.json                        # Configuração do Expo
 ├── package.json                    # Dependências do projeto
+├── FIREBASE_SETUP.md               # Guia de configuração Firebase
 ├── assets/                         # Imagens e ícones
 └── src/
-    ├── theme/
-    │   └── darkIndustrialTheme.js  # Tema Dark Industrial (cores e estilos)
-    ├── components/
-    │   └── MachineCard.js          # Componente de card de máquina
+    ├── config/
+    │   ├── config.js               # Configurações gerais
+    │   ├── firebaseConfig.js       # 🔒 Credenciais Firebase
+    │   └── firebaseConfig.example.js # Arquivo de exemplo
+    ├── context/
+    │   └── AuthContext.js          # Autenticação e gerenciamento de usuário
     ├── screens/
-    │   ├── DashboardScreen.js      # Tela principal com lista de máquinas
-    │   ├── ScannerScreen.js        # Tela de leitura de QR Code
-    │   └── SensorsScreen.js        # Tela de monitoramento de vibração
+    │   ├── SplashScreen.js         # Tela splash (3 segundos)
+    │   ├── LoginScreen.js          # Tela de login
+    │   ├── RegisterScreen.js       # Tela de registro
+    │   ├── HomeScreen.js           # Tela home com perfil do usuário
+    │   ├── BenchesScreen.js        # RF03 - mapa + reserva de bancadas
+    │   ├── DamageReportScreen.js   # RF04 - avaria com foto
+    │   ├── EquipmentsScreen.js     # RF02 - CRUD (admin)
+    │   └── UsageHistoryScreen.js   # RF05 - histórico (professor)
     └── navigation/
-        └── RootNavigator.js        # Configuração de navegação com tabs
+        └── RootNavigator.js        # Navegação com autenticação
 ```
 
-## 🎨 Tema Dark Industrial
+## 🗃️ Estrutura de dados (Firestore/Storage)
 
-O tema visual "Dark Industrial" utiliza:
-- **Cores principais**: Cyan (#00BCD4), Orange (#FF6B00), Green (#00E676)
-- **Cores neutras**: Tons de cinza/azul escuro para fundo
-- **Status**: Verde (Operando), Laranja (Alerta), Vermelho (Parada)
+### `users/{uid}`
+- `displayName` (string)
+- `email` (string)
+- `role` (`aluno` | `professor` | `admin`)
+- `createdAt` (timestamp)
 
-**Localização**: `src/theme/darkIndustrialTheme.js`
+### `equipments/{id}` (RF02)
+- `name` (string)
+- `type` (`monitor` | `teclado` | `mouse` | `robotica`)
+- `serial` (string|null)
+- `createdAt` / `updatedAt` (timestamp)
 
-## 📦 Dependências Principais
+### `reservations/{benchId}_{slotKey}` (RF03)
+- `benchId` (string ex. `B01`)
+- `slotKey` (string ex. `2026-04-14_19-00`)
+- `startAt` (date/timestamp)
+- `userId`, `userEmail`, `userDisplayName`
+- `createdAt`
 
-```json
-{
-  "react-native-paper": "^5.12.0",        // UI Components
-  "@react-navigation/native": "^6.1.9",   // Navigation
-  "@react-navigation/bottom-tabs": "^6.5.8", // Bottom Tabs
-  "expo-barcode-scanner": "~14.0.0",      // QR Code Scanner
-  "expo-sensors": "~14.0.0",              // Acelerômetro
-  "react-native-svg-charts": "^5.4.0"     // Gráficos de vibração
-}
-```
-
-## 🖥️ Screens
-
-### 1. Dashboard Screen
-- **Arquivo**: `src/screens/DashboardScreen.js`
-- **Componentes**: 
-  - Status summary (resumo de máquinas por status)
-  - Lista de MachineCard com dados em tempo real
-- **Dados de exemplo**: 5 máquinas com diferentes status
-- **Recurso**: FAB para atualizar dados
-
-### 2. Scanner Screen
-- **Arquivo**: `src/screens/ScannerScreen.js`
-- **Funcionalidades**:
-  - Captura de QR Codes usando câmera
-  - Visualização com overlay de identificação
-  - Exibição de código lido com tipo
-- **Permissões**: Requer permissão de câmera
-
-### 3. Sensors Screen
-- **Arquivo**: `src/screens/SensorsScreen.js`
-- **Funcionalidades**:
-  - Monitoramento em tempo real do acelerômetro
-  - Gráfico dinâmico de vibração (últimos 100 pontos)
-  - Métricas: Média, Pico, Eixos X, Y, Z
-  - Seleção de eixo (Combinado, X, Y, Z)
-- **Status automático**: Normal, Alerta, Crítico
-
-## 🧩 Componentes
-
-### MachineCard
-- **Arquivo**: `src/components/MachineCard.js`
-- **Props**:
-  - `machineId`: ID da máquina
-  - `name`: Nome da máquina
-  - `status`: Status (Operando, Alerta, Parada)
-  - `temperature`: Temperatura em °C
-  - `vibration`: Vibração em mm/s
-- **Features**: Borda colorida cor status, chip de status, métricas
-
-## 🧭 Navegação
-
-### RootNavigator
-- **Arquivo**: `src/navigation/RootNavigator.js`
-- **Tipo**: Bottom Tab Navigation
-- **Tabs**:
-  - Dashboard (ícone: grid)
-  - Scanner (ícone: qrcode-scan)
-  - Sensores (ícone: vibrate)
+### `damageReports/{id}` + Storage (RF04)
+- Firestore: `description`, `photoUrl`, `photoPath`, `user...`, `status`, `createdAt`
+- Storage: `damageReports/{uid}/{timestamp}.jpg`
 
 ## 🚀 Como Executar
 
-### Instalar dependências
+### 1) Instalar dependências
 ```bash
 npm install
 # ou
 yarn install
 ```
 
-### Iniciar o app
+### 2) Configurar Firebase
+- Siga `FIREBASE_SETUP.md`
+- Atualize `src/config/firebaseConfig.js`
+- No Firebase Console, habilite:
+  - Authentication → Email/Password
+  - Firestore Database
+  - Storage
+
+### 3) Definir um usuário como admin (para testar RF02)
+- Depois de criar uma conta no app, vá no Firestore:
+  - `users/{uid}` → campo `role` = `admin`
+
+### 4) Iniciar o app
 ```bash
 npm start
 # ou
@@ -134,13 +133,8 @@ npm run web        # Web
 - [ ] Export de relatórios
 - [ ] Sincronização de dados em nuvem
 
-## 📱 Permissões Necessárias
-
-O app requer:
-- **Câmera**: Para scanning de QR Codes
-- **Acelerômetro**: Para monitoramento de sensores (usuário já possui no dispositivo)
-
-As permissões estão configuradas em `app.json` usando plugins do Expo.
+## 📱 Permissões
+- **Câmera**: usada em `Avarias` para tirar foto (Expo Image Picker).
 
 ## 🎯 Convenções de Código
 
@@ -155,4 +149,4 @@ SENAI 2026
 
 ---
 
-**Desenvolvido com ❤️ para IndusMonitor 4.0**
+**Desenvolvido para fins didáticos (SENAI 2026).**

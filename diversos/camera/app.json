@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "camera",
-    "slug": "camera",
+    "name": "Meu Seletor de Cores",
+    "slug": "seletor-de-cores",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -15,11 +15,10 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.aluno.seletordecores",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#ffffff",
+        "foregroundImage": "./assets/android-icon-foreground.png"
       }
     },
     "web": {
