@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { autenticacao } from '../config/firebaseConfig';
 
 export default function TelaCadastro({ navigation }) {
+  const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
 
   const fazerCadastro = async () => {
     try {
-      await createUserWithEmailAndPassword(autenticacao, email, senha);
+      const usuarioCriado = await createUserWithEmailAndPassword(autenticacao, email, senha);
+
+      // Salvar o nome do usuário no displayName
+      await updateProfile(usuarioCriado.user, {
+        displayName: nome
+      });
+
       navigation.navigate('Login');
     } catch (erro) {
       setErro('Erro ao cadastrar. Tente novamente.');
@@ -19,6 +26,8 @@ export default function TelaCadastro({ navigation }) {
 
   return (
     <View style={estilos.container}>
+      <Text>Nome</Text>
+      <TextInput style={estilos.input} value={nome} onChangeText={setNome} />
       <Text>Email</Text>
       <TextInput style={estilos.input} value={email} onChangeText={setEmail} />
       <Text>Senha</Text>
