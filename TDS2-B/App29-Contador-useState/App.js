@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 export default function Contador() {
   const [contador, setContador] = useState(0);
  
-
+//comentario
   return (
     <View style={estilos.container}>
       <Text style={estilos.titulo}>Contador</Text>
