@@ -9,13 +9,11 @@ export default function TelaHome() {
   };
 
   const nomeUsuario = autenticacao.currentUser?.displayName
-  || 'Usuário';
-  const emailUsuario = autenticacao.currentUser?.email;
+    || 'Usuário';
 
   return (
     <View style={estilos.container}>
       <Text style={estilos.titulo}>Bem-vindo, {nomeUsuario}!</Text>
-      <Text style={estilos.email}>{emailUsuario}</Text>
       <Button title="Sair" onPress={fazerLogout} />
     </View>
   );
@@ -24,5 +22,4 @@ export default function TelaHome() {
 const estilos = StyleSheet.create({
   container: { padding: 20 },
   titulo: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
-  email: { fontSize: 14, color: '#666', marginBottom: 20 },
 });
