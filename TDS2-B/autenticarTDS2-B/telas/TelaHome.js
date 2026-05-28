@@ -17,7 +17,8 @@ export default function TelaHome() {
   return (
     <View style={estilos.container}>
       <Text style={estilos.titulo}>Bem-vindo, {nomeUsuario}!</Text>
-      <Button title="Editar Perfil" onPress={() => navigation.navigate('Perfil')} />
+      <Button title="Perfil" 
+      onPress={() => navigation.navigate('Perfil')} />
       <View style={estilos.espaco} />
       <Button title="Sair" onPress={fazerLogout} />
     </View>
