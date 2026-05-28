@@ -16,7 +16,8 @@ export default function TelaLogin({ navigation }) {
       const nomeUsuario = autenticacao.currentUser?.displayName || 'Usuário';
       setNomeUsuarioLogado(nomeUsuario);
     } catch (erro) {
-      setErro('Erro ao fazer login. Verifique seus dados.');
+      console.error("Erro de Login:", erro);
+      setErro('Erro ao fazer login. Verifique seus dados. Detalhe: ' + erro.message);
     }
   };
 
@@ -32,7 +33,7 @@ export default function TelaLogin({ navigation }) {
           <Text>Email</Text>
           <TextInput style={estilos.input} value={email} onChangeText={setEmail} />
           <Text>Senha</Text>
-          <TextInput style={estilos.input} value={senha} onChangeText={setSenha} secureTextEntry />
+          <TextInput style={estilos.input} value={senha} onChangeText={setSenha} secureTextEntry={true} />
           <Button title="Entrar" onPress={fazerLogin} />
           {erro ? <Text style={estilos.erro}>{erro}</Text> : null}
           <Button title="Cadastrar" onPress={() => navigation.navigate('Cadastro')} />
