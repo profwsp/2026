@@ -145,26 +145,43 @@ export default function TelaAdm() {
   };
 
   const deletarProduto = (id, nome) => {
-    Alert.alert(
-      'Confirmar Exclusão',
-      `Deseja realmente deletar o produto "${nome}"?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { 
-          text: 'Excluir', 
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteDoc(doc(bancoDados, 'produtos', id));
-              Alert.alert('Sucesso', 'Produto removido com sucesso.');
-            } catch (erro) {
-              console.error("Erro ao deletar produto:", erro);
-              Alert.alert('Erro', 'Não foi possível remover o produto.');
-            }
-          }
+    const acaoExcluir = async () => {
+      try {
+        await deleteDoc(doc(bancoDados, 'produtos', id));
+        if (Platform.OS === 'web') {
+          window.alert('Sucesso: Produto removido com sucesso.');
+        } else {
+          Alert.alert('Sucesso', 'Produto removido com sucesso.');
         }
-      ]
-    );
+      } catch (erro) {
+        console.error("Erro ao deletar produto:", erro);
+        if (Platform.OS === 'web') {
+          window.alert('Erro: Não foi possível remover o produto.');
+        } else {
+          Alert.alert('Erro', 'Não foi possível remover o produto.');
+        }
+      }
+    };
+
+    if (Platform.OS === 'web') {
+      const confirmou = window.confirm(`Deseja realmente deletar o produto "${nome}"?`);
+      if (confirmou) {
+        acaoExcluir();
+      }
+    } else {
+      Alert.alert(
+        'Confirmar Exclusão',
+        `Deseja realmente deletar o produto "${nome}"?`,
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { 
+            text: 'Excluir', 
+            style: 'destructive',
+            onPress: acaoExcluir
+          }
+        ]
+      );
+    }
   };
 
   const comprarProduto = (produto) => {
@@ -196,6 +213,8 @@ export default function TelaAdm() {
 
     return (
       <View style={estilos.card}>
+        <Image source={{ uri: item.Foto }} style={estilos.imagemProduto} />
+
         {/* Botão de excluir no topo esquerdo */}
         <TouchableOpacity 
           style={estilos.botaoDeletar} 
@@ -210,8 +229,6 @@ export default function TelaAdm() {
             <Text style={estilos.textoBadgeDesconto}>{descontoTexto} OFF</Text>
           </View>
         ) : null}
-
-        <Image source={{ uri: item.Foto }} style={estilos.imagemProduto} />
         
         <View style={estilos.infoContainer}>
           <Text numberOfLines={2} style={estilos.nomeProduto}>{item.Produto}</Text>

@@ -128,16 +128,16 @@ export default function TelaProdutos({ navigation }) {
 
     return (
       <View style={estilos.card}>
+        <TouchableOpacity onPress={() => navigation.navigate('DetalheProduto', { produto: item })}>
+          <Image source={{ uri: item.Foto }} style={estilos.imagemProduto} />
+        </TouchableOpacity>
+
         {/* Badge de desconto no topo direito */}
         {descontoTexto ? (
           <View style={estilos.badgeDesconto}>
             <Text style={estilos.textoBadgeDesconto}>{descontoTexto} OFF</Text>
           </View>
         ) : null}
-
-        <TouchableOpacity onPress={() => navigation.navigate('DetalheProduto', { produto: item })}>
-          <Image source={{ uri: item.Foto }} style={estilos.imagemProduto} />
-        </TouchableOpacity>
         
         <View style={estilos.infoContainer}>
           <Text numberOfLines={2} style={estilos.nomeProduto}>{item.Produto}</Text>

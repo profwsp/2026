@@ -7,6 +7,7 @@ import TelaHome from './telas/TelaHome';
 import TelaPerfil from './telas/TelaPerfil';
 import TelaProdutos from './telas/TelaProdutos';
 import TelaDetalheProduto from './telas/TelaDetalheProduto';
+import TelaAdm from './telas/TelaAdm';
 import { onAuthStateChanged } from 'firebase/auth';
 import { autenticacao } from './config/firebaseConfig';
 
@@ -31,6 +32,7 @@ export default function App() {
             <Camadas.Screen name="Perfil" component={TelaPerfil} />
             <Camadas.Screen name="Produtos" component={TelaProdutos} options={{ title: 'Nossos Produtos' }} />
             <Camadas.Screen name="DetalheProduto" component={TelaDetalheProduto} options={{ title: 'Detalhe do Produto' }} />
+            <Camadas.Screen name="Adm" component={TelaAdm} options={{ title: 'Gerenciar Produtos' }} />
           </>
         ) : (
           <>

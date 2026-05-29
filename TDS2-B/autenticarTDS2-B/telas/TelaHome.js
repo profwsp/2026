@@ -20,6 +20,9 @@ export default function TelaHome() {
       <Button title="Ver Produtos" 
       onPress={() => navigation.navigate('Produtos')} />
       <View style={estilos.espaco} />
+      <Button title="Cadastrar Produtos (ADM)" 
+      onPress={() => navigation.navigate('Adm')} />
+      <View style={estilos.espaco} />
       <Button title="Perfil" 
       onPress={() => navigation.navigate('Perfil')} />
       <View style={estilos.espaco} />
