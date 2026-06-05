@@ -129,7 +129,7 @@ export default function TelaProdutos({ navigation }) {
     return (
       <View style={estilos.card}>
         <TouchableOpacity onPress={() => navigation.navigate('DetalheProduto', { produto: item })}>
-          <Image source={{ uri: item.Foto }} style={estilos.imagemProduto} />
+          <Image source={{ uri: item.Foto }} style={estilos.imagemProduto} resizeMode="cover" />
         </TouchableOpacity>
 
         {/* Badge de desconto no topo direito */}
@@ -301,7 +301,6 @@ const estilos = StyleSheet.create({
     width: '100%',
     height: 140,
     backgroundColor: '#f8f9fa',
-    resizeMode: 'cover',
   },
   infoContainer: {
     padding: 10,

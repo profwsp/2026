@@ -13,13 +13,15 @@ import {
   Platform,
 } from 'react-native';
 import { bancoDados } from '../config/firebaseConfig';
-import { collection, onSnapshot, addDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 
 const camposIniciais = {
   Produto: '',
   Preço: '',
   Descrição: '',
   Foto: '',
+  Foto2: '',
+  Foto3: '',
   ValorNormal: '',
   ValorDesconto: '',
   Desconto: '',
@@ -31,6 +33,7 @@ export default function TelaAdm() {
   const [salvando, setSalvando] = useState(false);
   const [novoProduto, setNovoProduto] = useState(camposIniciais);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [editandoId, setEditandoId] = useState(null);
 
   // Buscar produtos em tempo real do Firestore
   useEffect(() => {
@@ -111,7 +114,31 @@ export default function TelaAdm() {
     setNovoProduto((anterior) => ({ ...anterior, [campo]: valor }));
   };
 
-  const cadastrarProduto = async () => {
+  const toggleFormulario = () => {
+    if (mostrarFormulario) {
+      setNovoProduto(camposIniciais);
+      setEditandoId(null);
+    }
+    setMostrarFormulario(!mostrarFormulario);
+  };
+
+  const iniciarEdicao = (produto) => {
+    setEditandoId(produto.id);
+    setNovoProduto({
+      Produto: produto.Produto || '',
+      Preço: produto.Preço || '',
+      Descrição: produto.Descrição || '',
+      Foto: produto.Foto || '',
+      Foto2: produto.Foto2 || '',
+      Foto3: produto.Foto3 || '',
+      ValorNormal: produto.ValorNormal || '',
+      ValorDesconto: produto.ValorDesconto || '',
+      Desconto: produto.Desconto || '',
+    });
+    setMostrarFormulario(true);
+  };
+
+  const salvarProduto = async () => {
     const { Produto, Preço } = novoProduto;
     if (!Produto.trim() || !Preço.trim()) {
       Alert.alert('Atenção', 'Nome do produto e Preço são obrigatórios.');
@@ -120,25 +147,56 @@ export default function TelaAdm() {
 
     setSalvando(true);
     try {
-      const produtosRef = collection(bancoDados, 'produtos');
-      
-      // Se não for fornecida foto, usa uma imagem padrão
       const fotoFinal = novoProduto.Foto.trim() 
         ? novoProduto.Foto 
         : 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=500&auto=format&fit=crop&q=60';
+      const foto2Final = novoProduto.Foto2.trim();
+      const foto3Final = novoProduto.Foto3.trim();
 
-      await addDoc(produtosRef, {
-        ...novoProduto,
-        Foto: fotoFinal,
-        createdAt: new Date(),
-      });
+      if (editandoId) {
+        // Atualizar produto existente
+        const produtoRef = doc(bancoDados, 'produtos', editandoId);
+        await updateDoc(produtoRef, {
+          ...novoProduto,
+          Foto: fotoFinal,
+          Foto2: foto2Final,
+          Foto3: foto3Final,
+          updatedAt: new Date(),
+        });
+        
+        if (Platform.OS === 'web') {
+          window.alert('Sucesso: Produto atualizado com sucesso!');
+        } else {
+          Alert.alert('Sucesso', 'Produto atualizado com sucesso!');
+        }
+      } else {
+        // Cadastrar novo produto
+        const produtosRef = collection(bancoDados, 'produtos');
+        await addDoc(produtosRef, {
+          ...novoProduto,
+          Foto: fotoFinal,
+          Foto2: foto2Final,
+          Foto3: foto3Final,
+          createdAt: new Date(),
+        });
+        
+        if (Platform.OS === 'web') {
+          window.alert('Sucesso: Produto cadastrado com sucesso!');
+        } else {
+          Alert.alert('Sucesso', 'Produto cadastrado com sucesso!');
+        }
+      }
 
       setNovoProduto(camposIniciais);
+      setEditandoId(null);
       setMostrarFormulario(false);
-      Alert.alert('Sucesso', 'Produto cadastrado com sucesso!');
     } catch (erro) {
-      console.error("Erro ao cadastrar produto:", erro);
-      Alert.alert('Erro', 'Não foi possível cadastrar o produto.');
+      console.error("Erro ao salvar produto:", erro);
+      if (Platform.OS === 'web') {
+        window.alert('Erro: Não foi possível salvar o produto.');
+      } else {
+        Alert.alert('Erro', 'Não foi possível salvar o produto.');
+      }
     } finally {
       setSalvando(false);
     }
@@ -184,14 +242,6 @@ export default function TelaAdm() {
     }
   };
 
-  const comprarProduto = (produto) => {
-    Alert.alert(
-      'Compra Realizada!',
-      `Parabéns! Você iniciou a compra de:\n\n🛍️ ${produto.Produto}\n💰 Valor: ${formatarMoeda(produto.Preço)}\n\nNossa equipe entrará em contato!`,
-      [{ text: 'OK' }]
-    );
-  };
-
   const formatarMoeda = (valor) => {
     if (!valor) return 'R$ 0,00';
     const num = parseFloat(valor.toString().replace(',', '.'));
@@ -213,7 +263,7 @@ export default function TelaAdm() {
 
     return (
       <View style={estilos.card}>
-        <Image source={{ uri: item.Foto }} style={estilos.imagemProduto} />
+        <Image source={{ uri: item.Foto }} style={estilos.imagemProduto} resizeMode="cover" />
 
         {/* Botão de excluir no topo esquerdo */}
         <TouchableOpacity 
@@ -251,8 +301,8 @@ export default function TelaAdm() {
             ) : null}
           </View>
 
-          <TouchableOpacity style={estilos.botaoComprar} onPress={() => comprarProduto(item)}>
-            <Text style={estilos.textoBotaoComprar}>🛒 Comprar</Text>
+          <TouchableOpacity style={estilos.botaoEditar} onPress={() => iniciarEdicao(item)}>
+            <Text style={estilos.textoBotaoEditar}>✏️ Editar</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -270,17 +320,21 @@ export default function TelaAdm() {
         </Text>
         <TouchableOpacity 
           style={estilos.botaoToggleForm} 
-          onPress={() => setMostrarFormulario(!mostrarFormulario)}
+          onPress={toggleFormulario}
         >
           <Text style={estilos.textoBotaoToggleForm}>
-            {mostrarFormulario ? 'Fechar Cadastro ✖' : 'Novo Produto ➕'}
+            {mostrarFormulario 
+              ? (editandoId ? 'Fechar Edição ✖' : 'Fechar Cadastro ✖') 
+              : 'Novo Produto ➕'}
           </Text>
         </TouchableOpacity>
       </View>
 
       {mostrarFormulario && (
         <View style={estilos.formulario}>
-          <Text style={estilos.tituloFormulario}>Cadastrar Novo Produto</Text>
+          <Text style={estilos.tituloFormulario}>
+            {editandoId ? 'Editar Produto' : 'Cadastrar Novo Produto'}
+          </Text>
           
           <TextInput
             placeholder="Nome do Produto *"
@@ -330,21 +384,37 @@ export default function TelaAdm() {
           </View>
 
           <TextInput
-            placeholder="URL da Foto do Produto (Opcional)"
+            placeholder="URL da Foto Principal (Opcional)"
             style={estilos.input}
             value={novoProduto.Foto}
             onChangeText={(v) => atualizarCampo('Foto', v)}
           />
 
+          <TextInput
+            placeholder="URL da Foto 2 (Opcional)"
+            style={estilos.input}
+            value={novoProduto.Foto2}
+            onChangeText={(v) => atualizarCampo('Foto2', v)}
+          />
+
+          <TextInput
+            placeholder="URL da Foto 3 (Opcional)"
+            style={estilos.input}
+            value={novoProduto.Foto3}
+            onChangeText={(v) => atualizarCampo('Foto3', v)}
+          />
+
           <TouchableOpacity 
             style={[estilos.botaoSalvar, salvando && estilos.botaoDesativado]} 
-            onPress={cadastrarProduto}
+            onPress={salvarProduto}
             disabled={salvando}
           >
             {salvando ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={estilos.textoBotaoSalvar}>Salvar Produto no Firestore</Text>
+              <Text style={estilos.textoBotaoSalvar}>
+                {editandoId ? 'Salvar Alterações' : 'Salvar Produto no Firestore'}
+              </Text>
             )}
           </TouchableOpacity>
         </View>
@@ -543,7 +613,6 @@ const estilos = StyleSheet.create({
     width: '100%',
     height: 140,
     backgroundColor: '#f8f9fa',
-    resizeMode: 'cover',
   },
   infoContainer: {
     padding: 10,
@@ -582,14 +651,14 @@ const estilos = StyleSheet.create({
     fontWeight: '600',
     marginTop: 2,
   },
-  botaoComprar: {
-    backgroundColor: '#007BFF',
+  botaoEditar: {
+    backgroundColor: '#FF9F43',
     paddingVertical: 8,
     borderRadius: 6,
     alignItems: 'center',
     marginTop: 4,
   },
-  textoBotaoComprar: {
+  textoBotaoEditar: {
     color: '#fff',
     fontSize: 13,
     fontWeight: 'bold',
