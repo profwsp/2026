@@ -1,0 +1,67 @@
+ /* Este arquivo contem o estilo CSS para a página da cafeteria Grão Dourado sem a tag <style> no HTML.
+ Ele está ligado ao index e sobre.html*/
+ p {
+        color: #741a1a;
+        font-family: Arial, sans-serif;
+    }
+    h1 {
+        color: #741a1a;
+        font-family: Comic Sans MS, cursive;
+    }
+    header {
+        background-color: #754410;
+        text-align: center;
+            }
+    header h1 {
+        color: #ffffff;
+       }
+    header p {
+        color: #ffffff;
+    }
+    body {
+        background-color: #f5f5dc;
+        margin: 0;
+ }
+    section {
+        background-color: #fff;
+        border-radius: 10px;
+        border: 2px solid #d4a373;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+    section h3 {
+        color: #754410;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 22px;
+    }
+    section p {
+        color: #741a1a;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+    }
+    main {
+        width:400px;
+        margin: 0 auto;
+    }
+    main h2 {
+        color: #754410;
+        font-family: 'Courier New', Courier, monospace;
+        text-align: center;
+    }
+    footer {
+        background-color: #754410;
+        color: #ffffff;
+        text-align: center;
+        padding: 8px;
+        font-family: Arial, sans-serif;
+    }
+    nav {
+        padding: 8px;
+        text-align: center;
+    }
+    nav a {
+        color: #f7f6f5;
+        text-decoration: none;
+        margin: 0 8px;
+        font-family: Arial, sans-serif;
+    }
