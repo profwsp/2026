@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cafeteria Grão Dourado — Class e ID</title>
+  <link rel="stylesheet" href="classes.css">
+</head>
+<body>
+
+  <main>
+    <h1>☕ Cardápio</h1>
+
+    <!-- CLASSE + ID: herda o visual de .card e o ID sobrescreve o que muda -->
+    <div class="card" id="promo-dia">
+      <h4>Promoção do dia</h4>
+      <p>Cappuccino + pão de queijo por R$ 12,00</p>
+    </div>
+
+    <!-- SÓ A CLASSE BASE -->
+    <div class="card">
+      <h4>Espresso</h4>
+      <p>Café curto e intenso. R$ 6,00</p>
+    </div>
+
+    <!-- DUAS CLASSES: card + destaque (separadas por espaço) -->
+    <div class="card destaque">
+      <h4>Cappuccino</h4>
+      <p>O mais pedido da casa. R$ 9,50</p>
+    </div>
+
+    <!-- DUAS CLASSES: card + esgotado -->
+    <div class="card esgotado">
+      <h4>Bolo de cenoura</h4>
+      <p>Volta amanhã! R$ 7,00</p>
+    </div>
+  </main>
+
+</body>
+</html>

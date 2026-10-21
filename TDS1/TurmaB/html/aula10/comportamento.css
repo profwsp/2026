@@ -1,0 +1,108 @@
+/* ===== Página ===== */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #fdf6ec;
+  color: #3b2a1a;
+}
+
+main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+h1, h2 {
+  color: #6f4e37;
+}
+
+/* ===== Cards ===== */
+.card {
+  background-color: #ffffff;
+  border: 2px solid #d4a373;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: transform 0.5s ease,             /* TRANSITION */
+              box-shadow 0.25s ease,
+              border-color 0.25s ease;
+}
+
+.card h4 {
+  margin: 0 0 4px;
+  color: #b5651d;
+  font-size: 1.15em;
+  transition: color 0.25s ease;
+}
+
+.card p {
+  margin: 0 0 12px;
+  color: #7a6552;
+}
+
+.preco {
+  font-weight: bold;
+  color: #6f4e37;
+  margin-right: 12px;
+}
+
+.card:hover {                                   /* HOVER */
+  transform: translateY(-6px);
+  box-shadow: 3px 6px 9px 12px rgba(111, 78, 55, 0.2);
+  border-color: #c4262e;
+}
+
+.card:hover h4 {                                /* HOVER no pai muda o filho */
+  color: #2d17a7;
+}
+
+/* ===== Botões ===== */
+.botao {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 8px;
+  background-color: #6f4e37;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;                              /* CURSOR */
+  transition: background-color 0.3s ease, transform 0.2s ease-out;
+}
+
+.botao:hover {
+  background-color: #16a044;
+  transform: translateY(-2px);
+}
+
+.botao:disabled {
+  background-color: #b9aea4;
+  cursor: not-allowed;                          /* CURSOR de bloqueado */
+  transform: none;
+}
+
+/* ===== Formulário ===== */
+.contato {
+  margin-top: 40px;
+}
+
+label {
+  font-weight: bold;
+}
+
+.campo {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 6px 0 12px;
+  padding: 12px 14px;
+  border: 2px solid #d4a373;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.campo:focus {                                  /* FOCUS */
+  outline: none;
+  border-color: #c4262e;
+  box-shadow: 0 0 0 4px rgba(196, 38, 46, 0.18);
+}
