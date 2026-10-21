@@ -27,7 +27,7 @@ export default function App() {
         ) : (
           <>
             <Camadas.Screen name="Login" component={TelaLogin} />
-            <Camadas.Screen name="Cadastro" component={''} />
+            <Camadas.Screen name="Cadastro" component={TelaCadastro} />
           </>
         )}
       </Camadas.Navigator>

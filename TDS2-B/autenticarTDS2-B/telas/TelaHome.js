@@ -17,6 +17,12 @@ export default function TelaHome() {
   return (
     <View style={estilos.container}>
       <Text style={estilos.titulo}>Bem-vindo, {nomeUsuario}!</Text>
+      <Button title="Ver Produtos" 
+      onPress={() => navigation.navigate('Produtos')} />
+      <View style={estilos.espaco} />
+      <Button title="Cadastrar Produtos (ADM)" 
+      onPress={() => navigation.navigate('Adm')} />
+      <View style={estilos.espaco} />
       <Button title="Perfil" 
       onPress={() => navigation.navigate('Perfil')} />
       <View style={estilos.espaco} />
@@ -27,5 +33,6 @@ export default function TelaHome() {
 
 const estilos = StyleSheet.create({
   container: { padding: 20 },
-  titulo: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
+  titulo: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+  espaco: { height: 12 },
 });
