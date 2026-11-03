@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mídia em HTML — Cafeteria Grão Dourado</title>
+</head>
+<body>
+
+  <h1>☕ Cafeteria Grão Dourado</h1>
+  <p>Vídeo, áudio, YouTube e PDF em uma única página.</p>
+
+  <!-- ===== VÍDEO ===== -->
+  <h2>Nosso vídeo</h2>
+  <video width="360" height="640"  controls preload="metadata" autoplay muted loop poster="video/ter.jpg">
+    <source src="video/Como_colocar_vídeos_e_PDFs_no_HTML_do_jeito_certo.mp4" type="video/mp4">
+    <source src="video/cafe.webm" type="video/webm">
+    <track src="video/legenda.vtt" kind="subtitles" srclang="pt" label="Português">
+    Seu navegador não suporta vídeo.
+    <a href="video/cafe.mp4">Baixe o vídeo (MP4)</a>.
+  </video>
+
+  <!-- ===== ÁUDIO ===== -->
+  <h2>Nossa vinheta</h2>
+  <audio controls>
+    <source src="audio/Como_usar_vídeo_e_áudio_no_HTML5.m4a" type="audio/mp4">
+    <source src="audio/jingle.ogg" type="audio/ogg">
+    Seu navegador não suporta áudio.
+    <a href="audio/jingle.mp3">Baixe a vinheta (MP3)</a>.
+  </audio>
+
+  <!-- ===== YOUTUBE ===== -->
+  <h2>Vídeo do YouTube</h2>
+  <!-- Troque SEU_ID_DO_VIDEO pelo código que aparece depois de "v=" no endereço do vídeo -->
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/mvQdo8UTV0o?si=jcu_tkQSzLpQbr29&amp;controls=0&amp;start=6397" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+  <!-- ===== PDF ===== -->
+  <h2>Nosso cardápio</h2>
+  <object data="docs/cardapio.pdf" type="application/pdf" width="640" height="700">
+    Seu navegador não mostra PDF aqui.
+    <a href="docs/cardapio.pdf">Abra o cardápio em PDF</a>.
+  </object>
+
+</body>
+</html>
