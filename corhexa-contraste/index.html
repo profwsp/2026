@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contraste WCAG — CorHexa</title>
+<meta name="description" content="Verificador de contraste WCAG: calcule a razão entre texto, fundo, botões e links, e veja se a combinação passa nos critérios AA e AAA.">
+<meta name="theme-color" content="#5b46e0">
+<link rel="canonical" href="https://corhexa.washington.pro.br/">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Contraste WCAG — CorHexa">
+<meta property="og:description" content="Verificador de contraste WCAG: calcule a razão entre texto, fundo, botões e links, e veja se a combinação passa nos critérios AA e AAA.">
+<meta property="og:url" content="https://corhexa.washington.pro.br/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Contraste WCAG — CorHexa">
+<meta name="twitter:description" content="Verificador de contraste WCAG para texto, botões e links.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+  :root{
+    --paper:#f6f3ee;
+    --ink:#201f2b;
+    --muted:#6b6875;
+    --line:#ddd6ca;
+    --surface:#ffffff;
+    --accent:#5b46e0;
+    --accent-soft:#efe9ff;
+    --pass:#1f7a4d;
+    --pass-soft:#e3f5ea;
+    --fail:#b8342f;
+    --fail-soft:#fbe8e6;
+    --shadow: 0 1px 2px rgba(32,31,43,.04), 0 12px 32px -16px rgba(32,31,43,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#15131c;
+      --ink:#eee9df;
+      --muted:#9a93a8;
+      --line:#332f40;
+      --surface:#1d1a27;
+      --accent:#9484ff;
+      --accent-soft:#26213d;
+      --pass:#57d59a;
+      --pass-soft:#123023;
+      --fail:#ff7a70;
+      --fail-soft:#3a1a17;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 20px 40px -20px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#15131c;
+    --ink:#eee9df;
+    --muted:#9a93a8;
+    --line:#332f40;
+    --surface:#1d1a27;
+    --accent:#9484ff;
+    --accent-soft:#26213d;
+    --pass:#57d59a;
+    --pass-soft:#123023;
+    --fail:#ff7a70;
+    --fail-soft:#3a1a17;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 20px 40px -20px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box;}
+  html{ background:var(--paper); }
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Public Sans',system-ui,sans-serif;
+    min-height:100vh;
+    margin:0;
+  }
+  ::selection{ background:var(--accent-soft); color:var(--accent); }
+
+  .wrap{
+    max-width:900px;
+    margin:0 auto;
+    padding:56px 24px 80px;
+    display:flex;
+    flex-direction:column;
+    gap:36px;
+  }
+
+  header{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:500;
+  }
+  h1{
+    font-family:'Instrument Serif',Georgia,serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:clamp(40px,7vw,64px);
+    line-height:1;
+    margin:0;
+    text-wrap:balance;
+  }
+  .lede{
+    color:var(--muted);
+    font-size:16px;
+    max-width:56ch;
+    line-height:1.55;
+    margin:0;
+  }
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:20px;
+    box-shadow:var(--shadow);
+  }
+
+  .inputs{
+    padding:28px;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    gap:20px;
+    align-items:center;
+  }
+  @media (max-width:640px){
+    .inputs{ grid-template-columns:1fr; }
+    .swap-col{ order:2; align-self:center; justify-self:center; transform:rotate(90deg); }
+    .field:nth-child(3){ order:3; }
+  }
+
+  .field{ display:flex; flex-direction:column; gap:10px; }
+  .field label{
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .swatch-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:8px 10px;
+    background:var(--paper);
+  }
+  .swatch-row input[type=color]{
+    -webkit-appearance:none;
+    appearance:none;
+    width:38px;
+    height:38px;
+    border:none;
+    border-radius:9px;
+    padding:0;
+    background:none;
+    cursor:pointer;
+    flex:none;
+  }
+  .swatch-row input[type=color]::-webkit-color-swatch-wrapper{ padding:0; border-radius:9px; }
+  .swatch-row input[type=color]::-webkit-color-swatch{ border:1px solid var(--line); border-radius:9px; }
+  .swatch-row input[type=text]{
+    border:none;
+    background:none;
+    color:var(--ink);
+    font-family:'JetBrains Mono',monospace;
+    font-size:15px;
+    font-weight:500;
+    width:100%;
+    outline:none;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+  }
+  .swatch-row:focus-within{ border-color:var(--accent); }
+
+  .swap-col{
+    display:flex;
+    justify-content:center;
+  }
+  .icon-btn{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--surface);
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:border-color .15s, color .15s, transform .15s;
+  }
+  .icon-btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .icon-btn:active{ transform:scale(.92); }
+  .icon-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .toolbar{
+    display:flex;
+    justify-content:flex-end;
+    padding:0 28px 20px;
+    margin-top:-16px;
+  }
+  .text-btn{
+    font-family:'Public Sans',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--accent);
+    background:var(--accent-soft);
+    border:none;
+    border-radius:999px;
+    padding:8px 16px;
+    cursor:pointer;
+  }
+  .text-btn:hover{ filter:brightness(1.05); }
+  .text-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .result{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:28px;
+    align-items:center;
+    padding:8px 28px 28px;
+    border-top:1px solid var(--line);
+    padding-top:28px;
+  }
+  @media (max-width:560px){ .result{ grid-template-columns:1fr; text-align:center; } }
+
+  .ratio-figure{ display:flex; flex-direction:column; align-items:flex-start; gap:4px; }
+  @media (max-width:560px){ .ratio-figure{ align-items:center; } }
+  .ratio-num{
+    font-family:'JetBrains Mono',monospace;
+    font-weight:700;
+    font-size:56px;
+    line-height:1;
+    font-variant-numeric:tabular-nums;
+  }
+  .ratio-num span{ font-size:22px; color:var(--muted); font-weight:500; }
+  .ratio-verdict{
+    font-size:13px;
+    font-weight:600;
+    padding:4px 10px;
+    border-radius:999px;
+  }
+
+  .chips{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+  }
+  @media (max-width:420px){ .chips{ grid-template-columns:1fr; } }
+  .chip{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:10px 14px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    font-size:13px;
+  }
+  .chip .name{ font-weight:600; }
+  .chip .req{ color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:12px; }
+  .chip .badge{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    font-weight:700;
+    padding:2px 8px;
+    border-radius:999px;
+    letter-spacing:.03em;
+  }
+  .chip.pass{ background:var(--pass-soft); }
+  .chip.pass .badge{ background:var(--pass); color:var(--surface); }
+  .chip.fail{ background:var(--fail-soft); }
+  .chip.fail .badge{ background:var(--fail); color:var(--surface); }
+
+  .preview{
+    border-radius:20px;
+    border:1px solid var(--line);
+    padding:44px 40px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    transition:background-color .2s, color .2s;
+  }
+  .preview .big{
+    font-family:'Instrument Serif',Georgia,serif;
+    font-size:clamp(28px,4vw,40px);
+    line-height:1.15;
+    outline:none;
+  }
+  .preview .normal{
+    font-family:'Public Sans',sans-serif;
+    font-size:17px;
+    line-height:1.6;
+    max-width:56ch;
+    outline:none;
+  }
+  .preview .cap{
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    opacity:.6;
+  }
+
+  .section-head{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    padding:28px 28px 4px;
+  }
+  .section-head h2{
+    font-family:'Instrument Serif',Georgia,serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:26px;
+    margin:0;
+  }
+  .section-head p{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+    max-width:56ch;
+  }
+
+  .ui-field{
+    padding:0 28px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    max-width:320px;
+  }
+
+  .ui-preview{
+    padding:36px 40px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:22px;
+    transition:background-color .2s;
+  }
+  .ui-preview .btn{
+    font-family:'Public Sans',sans-serif;
+    font-weight:600;
+    font-size:15px;
+    padding:12px 22px;
+    border-radius:10px;
+    cursor:default;
+    border:2px solid transparent;
+  }
+  .ui-preview .btn-outline{ background:transparent; }
+  .ui-preview .link-sample{
+    font-size:16px;
+    line-height:1.6;
+    max-width:38ch;
+  }
+  .ui-preview .link-sample a{ font-weight:600; text-underline-offset:3px; }
+
+  .legend{
+    color:var(--muted);
+    font-size:13.5px;
+    line-height:1.6;
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 18px;
+  }
+  .legend b{ color:var(--ink); font-weight:600; }
+
+  footer{
+    color:var(--muted);
+    font-size:12.5px;
+    text-align:center;
+  }
+  footer a{ color:var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">WCAG 2.1 · Contraste de cores</span>
+    <h1>A cor tem contraste?</h1>
+    <p class="lede">Escolha a cor do texto e do fundo para calcular a razão de contraste e ver se a combinação passa nos critérios de acessibilidade AA e AAA.</p>
+  </header>
+
+  <div class="card">
+    <div class="inputs">
+      <div class="field">
+        <label for="fgHex">Texto</label>
+        <div class="swatch-row">
+          <input type="color" id="fgPicker" value="#201f2b" aria-label="Selecionar cor do texto">
+          <input type="text" id="fgHex" value="#201F2B" maxlength="7" aria-label="Código hexadecimal da cor do texto">
+        </div>
+      </div>
+
+      <div class="swap-col">
+        <button class="icon-btn" id="swapBtn" title="Inverter cores" aria-label="Inverter cores de texto e fundo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v14M3 13l4 4 4-4M17 21V7M21 11l-4-4-4 4"/></svg>
+        </button>
+      </div>
+
+      <div class="field">
+        <label for="bgHex">Fundo</label>
+        <div class="swatch-row">
+          <input type="color" id="bgPicker" value="#f6f3ee" aria-label="Selecionar cor de fundo">
+          <input type="text" id="bgHex" value="#F6F3EE" maxlength="7" aria-label="Código hexadecimal da cor de fundo">
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="text-btn" id="randomBtn">Combinação aleatória</button>
+    </div>
+
+    <div class="result">
+      <div class="ratio-figure">
+        <div class="ratio-num" id="ratioNum">1.00<span>:1</span></div>
+        <div class="ratio-verdict" id="ratioVerdict">—</div>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+
+  <div class="preview" id="previewBox">
+    <span class="cap">Pré-visualização</span>
+    <div class="big" id="previewBig" contenteditable="true" spellcheck="false">Texto grande (18pt+)</div>
+    <div class="normal" id="previewNormal" contenteditable="true" spellcheck="false">Texto normal (14–18pt) — clique para editar e testar seu próprio conteúdo com estas cores.</div>
+  </div>
+
+  <div class="card">
+    <div class="section-head">
+      <h2>Botões e links</h2>
+      <p>Escolha a cor de destaque usada em botões e links sobre o fundo definido acima. Testamos o texto do link (4.5:1 / 3:1) e o contorno ou preenchimento do botão como componente não textual (3:1, WCAG 1.4.11).</p>
+    </div>
+
+    <div class="ui-field field">
+      <label for="accentHex">Cor de destaque</label>
+      <div class="swatch-row">
+        <input type="color" id="accentPicker" value="#5b46e0" aria-label="Selecionar cor de destaque para botões e links">
+        <input type="text" id="accentHex" value="#5B46E0" maxlength="7" aria-label="Código hexadecimal da cor de destaque">
+      </div>
+    </div>
+
+    <div class="ui-preview" id="uiPreviewBox">
+      <button class="btn btn-filled" id="btnFilled">Confirmar pedido</button>
+      <button class="btn btn-outline" id="btnOutline">Cancelar</button>
+      <p class="link-sample" id="linkSample">Leia os <a href="#" id="linkSampleAnchor" onclick="return false;">termos de uso</a> antes de continuar.</p>
+    </div>
+
+    <div class="result">
+      <div class="ratio-figure">
+        <div class="ratio-num" id="accentRatioNum">1.00<span>:1</span></div>
+        <div class="ratio-verdict" id="accentRatioVerdict">—</div>
+      </div>
+      <div class="chips" id="accentChips"></div>
+    </div>
+  </div>
+
+  <p class="legend">
+    <span><b>AA normal</b> ≥ 4.5:1</span>
+    <span><b>AA grande</b> ≥ 3:1</span>
+    <span><b>AAA normal</b> ≥ 7:1</span>
+    <span><b>AAA grande</b> ≥ 4.5:1</span>
+    <span>· texto grande = 18pt+ (ou 14pt+ em negrito)</span>
+    <span>· componente não textual ≥ 3:1 (bordas e preenchimentos de botões)</span>
+  </p>
+
+  <footer>Cálculo de luminância relativa e razão de contraste conforme WCAG 2.1. · <a href="https://corhexa.washington.pro.br/">corhexa.washington.pro.br</a></footer>
+</div>
+
+<script>
+(function(){
+  const fgHex = document.getElementById('fgHex');
+  const bgHex = document.getElementById('bgHex');
+  const fgPicker = document.getElementById('fgPicker');
+  const bgPicker = document.getElementById('bgPicker');
+  const ratioNum = document.getElementById('ratioNum');
+  const ratioVerdict = document.getElementById('ratioVerdict');
+  const chips = document.getElementById('chips');
+  const previewBox = document.getElementById('previewBox');
+  const swapBtn = document.getElementById('swapBtn');
+  const randomBtn = document.getElementById('randomBtn');
+
+  const accentHex = document.getElementById('accentHex');
+  const accentPicker = document.getElementById('accentPicker');
+  const accentRatioNum = document.getElementById('accentRatioNum');
+  const accentRatioVerdict = document.getElementById('accentRatioVerdict');
+  const accentChips = document.getElementById('accentChips');
+  const uiPreviewBox = document.getElementById('uiPreviewBox');
+  const btnFilled = document.getElementById('btnFilled');
+  const btnOutline = document.getElementById('btnOutline');
+  const linkSampleAnchor = document.getElementById('linkSampleAnchor');
+
+  function normalizeHex(v){
+    v = (v||'').trim();
+    if(!v.startsWith('#')) v = '#'+v;
+    if(/^#([0-9a-f]{3})$/i.test(v)){
+      v = '#'+v.slice(1).split('').map(c=>c+c).join('');
+    }
+    return v;
+  }
+  function isValidHex(v){ return /^#[0-9a-f]{6}$/i.test(v); }
+
+  function hexToRgb(hex){
+    const n = parseInt(hex.slice(1),16);
+    return { r:(n>>16)&255, g:(n>>8)&255, b:n&255 };
+  }
+  function relLuminance({r,g,b}){
+    const chan = c => {
+      c/=255;
+      return c <= 0.03928 ? c/12.92 : Math.pow((c+0.055)/1.055, 2.4);
+    };
+    const R=chan(r), G=chan(g), B=chan(b);
+    return 0.2126*R + 0.7152*G + 0.0722*B;
+  }
+  function contrastRatio(hexA, hexB){
+    const La = relLuminance(hexToRgb(hexA));
+    const Lb = relLuminance(hexToRgb(hexB));
+    const [hi, lo] = La > Lb ? [La, Lb] : [Lb, La];
+    return (hi + 0.05) / (lo + 0.05);
+  }
+  function randomHex(){
+    const n = Math.floor(Math.random()*0xffffff);
+    return '#'+n.toString(16).padStart(6,'0');
+  }
+
+  const CRITERIA = [
+    { key:'aa-normal',  name:'AA · Normal', min:4.5 },
+    { key:'aa-large',   name:'AA · Grande', min:3 },
+    { key:'aaa-normal', name:'AAA · Normal', min:7 },
+    { key:'aaa-large',  name:'AAA · Grande', min:4.5 },
+  ];
+  const UI_CRITERION = { key:'ui-nontext', name:'Componente (botão) · não textual', min:3 };
+
+  function bestLabelColor(bgHexColor){
+    return relLuminance(hexToRgb(bgHexColor)) > 0.45 ? '#1a1a22' : '#ffffff';
+  }
+
+  function saveState(fg,bg,accent){
+    try{ localStorage.setItem('contraste-wcag', JSON.stringify({fg,bg,accent})); }catch(e){}
+  }
+  function loadState(){
+    try{ return JSON.parse(localStorage.getItem('contraste-wcag')||'null'); }catch(e){ return null; }
+  }
+
+  function renderChipsInto(target, ratio, criteria){
+    target.innerHTML = criteria.map(c=>{
+      const pass = ratio >= c.min;
+      return `<div class="chip ${pass?'pass':'fail'}">
+        <span class="name">${c.name}</span>
+        <span class="req">≥ ${c.min}:1</span>
+        <span class="badge">${pass?'PASSA':'FALHA'}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function verdictFor(ratio, softFail){
+    if(ratio >= 7) return { text:'Excelente (AAA)', bg:'var(--pass-soft)', color:'var(--pass)' };
+    if(ratio >= 4.5) return { text:'Bom (AA)', bg:'var(--pass-soft)', color:'var(--pass)' };
+    if(ratio >= 3) return { text:softFail, bg:'var(--fail-soft)', color:'var(--fail)' };
+    return { text:'Contraste insuficiente', bg:'var(--fail-soft)', color:'var(--fail)' };
+  }
+
+  function render(){
+    const fg = normalizeHex(fgHex.value);
+    const bg = normalizeHex(bgHex.value);
+    if(!isValidHex(fg) || !isValidHex(bg)) return;
+
+    fgPicker.value = fg;
+    bgPicker.value = bg;
+    previewBox.style.color = fg;
+    previewBox.style.backgroundColor = bg;
+
+    const ratio = contrastRatio(fg, bg);
+    ratioNum.innerHTML = ratio.toFixed(2) + '<span>:1</span>';
+
+    const v = verdictFor(ratio, 'Somente texto grande');
+    ratioVerdict.textContent = v.text;
+    ratioVerdict.style.background = v.bg;
+    ratioVerdict.style.color = v.color;
+
+    renderChipsInto(chips, ratio, CRITERIA);
+
+    renderUi();
+    saveState(fg,bg,normalizeHex(accentHex.value));
+  }
+
+  function renderUi(){
+    const fg = normalizeHex(fgHex.value);
+    const bg = normalizeHex(bgHex.value);
+    const accent = normalizeHex(accentHex.value);
+    if(!isValidHex(bg) || !isValidHex(accent) || !isValidHex(fg)) return;
+
+    accentPicker.value = accent;
+    uiPreviewBox.style.backgroundColor = bg;
+    uiPreviewBox.style.color = fg;
+
+    const label = bestLabelColor(accent);
+    btnFilled.style.background = accent;
+    btnFilled.style.borderColor = accent;
+    btnFilled.style.color = label;
+    btnOutline.style.borderColor = accent;
+    btnOutline.style.color = accent;
+    linkSampleAnchor.style.color = accent;
+
+    const ratio = contrastRatio(accent, bg);
+    accentRatioNum.innerHTML = ratio.toFixed(2) + '<span>:1</span>';
+
+    const v = verdictFor(ratio, 'Somente componente/texto grande');
+    accentRatioVerdict.textContent = v.text;
+    accentRatioVerdict.style.background = v.bg;
+    accentRatioVerdict.style.color = v.color;
+
+    renderChipsInto(accentChips, ratio, CRITERIA.concat([UI_CRITERION]));
+  }
+
+  function syncFromPicker(pickerEl, hexEl, after){
+    hexEl.value = pickerEl.value.toUpperCase();
+    after();
+  }
+
+  fgPicker.addEventListener('input', ()=>syncFromPicker(fgPicker, fgHex, render));
+  bgPicker.addEventListener('input', ()=>syncFromPicker(bgPicker, bgHex, render));
+  fgHex.addEventListener('input', render);
+  bgHex.addEventListener('input', render);
+  fgHex.addEventListener('blur', ()=>{ fgHex.value = normalizeHex(fgHex.value).toUpperCase(); render(); });
+  bgHex.addEventListener('blur', ()=>{ bgHex.value = normalizeHex(bgHex.value).toUpperCase(); render(); });
+
+  swapBtn.addEventListener('click', ()=>{
+    const tmp = fgHex.value;
+    fgHex.value = bgHex.value;
+    bgHex.value = tmp;
+    render();
+  });
+
+  randomBtn.addEventListener('click', ()=>{
+    fgHex.value = randomHex().toUpperCase();
+    bgHex.value = randomHex().toUpperCase();
+    render();
+  });
+
+  accentPicker.addEventListener('input', ()=>syncFromPicker(accentPicker, accentHex, renderUi));
+  accentHex.addEventListener('input', renderUi);
+  accentHex.addEventListener('blur', ()=>{ accentHex.value = normalizeHex(accentHex.value).toUpperCase(); renderUi(); });
+
+  const saved = loadState();
+  if(saved && isValidHex(normalizeHex(saved.fg)) && isValidHex(normalizeHex(saved.bg))){
+    fgHex.value = saved.fg.toUpperCase();
+    bgHex.value = saved.bg.toUpperCase();
+  }
+  if(saved && saved.accent && isValidHex(normalizeHex(saved.accent))){
+    accentHex.value = saved.accent.toUpperCase();
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
